@@ -15,6 +15,7 @@ endif
 "set hidden		" Hide buffers when they are abandoned
 set mouse=a		" Enable mouse usage (all modes)
 set clipboard=unnamedplus
+set nf=alpha
 
 " Source a global configuration file if available
 if filereadable("/etc/vim/vimrc.local")
@@ -30,24 +31,26 @@ call neobundle#begin(expand('~/.vim/bundle'))
 " originalrepos on github
 NeoBundle 'Shougo/neobundle.vim'
 NeoBundle 'Shougo/unite.vim'
+NeoBundle 'ujihisa/unite-colorscheme'
 NeoBundle 'scrooloose/nerdtree'
 NeoBundle "Shougo/neocomplete.vim"
 NeoBundle 'Shougo/neosnippet'
 NeoBundle 'Shougo/neosnippet-snippets'
 NeoBundle "scrooloose/syntastic"
-NeoBundle 'Townk/vim-autoclose'
+"NeoBundle 'Townk/vim-autoclose'
 NeoBundle 'thinca/vim-quickrun'
-
-"haskell
-NeoBundle 'kana/vim-filetype-haskell'
-NeoBundle 'eagletmt/ghcmod-vim'
-NeoBundle 'ujihisa/neco-ghc'
-
 NeoBundle "tyru/caw.vim.git"
-
-"cpp
-NeoBundle 'vim-jp/cpp-vim'
-NeoBundle 'octol/vim-cpp-enhanced-highlight'
+NeoBundle 'itchyny/lightline.vim'
+"NeoBundle 'bronson/vim-trailing-whitespace'
+NeoBundle 'YankRing.vim'
+NeoBundle 'mbbill/undotree'
+NeoBundle 'troydm/easybuffer.vim'
+NeoBundle 'yuratomo/w3m.vim'
+NeoBundle 'mattn/webapi-vim'
+NeoBundle 'mattn/excitetranslate-vim'
+NeoBundle 'nathanaelkane/vim-indent-guides'
+NeoBundle 'gregsexton/VimCalc'
+NeoBundle 'thinca/vim-ref'
 
 NeoBundle 'Shougo/vimproc.vim', {
 \ 'build' : {
@@ -59,6 +62,27 @@ NeoBundle 'Shougo/vimproc.vim', {
 \    },
 \ }
 
+"colorsheme
+NeoBundle 'altercation/vim-colors-solarized'
+NeoBundle 'croaker/mustang-vim'
+NeoBundle 'nanotech/jellybeans.vim'
+NeoBundle 'tomasr/molokai'
+NeoBundle 'w0ng/vim-hybrid'
+NeoBundle 'jonathanfilip/vim-lucius'
+NeoBundle 'jpo/vim-railscasts-theme'
+NeoBundle 'altercation/vim-colors-solarized'
+NeoBundle 'vim-scripts/Wombat'
+NeoBundle 'vim-scripts/rdark'
+
+"haskell
+NeoBundle 'kana/vim-filetype-haskell'
+NeoBundle 'eagletmt/ghcmod-vim'
+NeoBundle 'ujihisa/neco-ghc'
+
+"cpp
+NeoBundle 'vim-jp/cpp-vim'
+NeoBundle 'octol/vim-cpp-enhanced-highlight'
+
 "Markdown
 NeoBundle "godlygeek/tabular"
 NeoBundle "joker1007/vim-markdown-quote-syntax"
@@ -66,6 +90,8 @@ NeoBundle "rcmdnk/vim-markdown"
 NeoBundle 'tukiyo/previm'
 NeoBundle 'tyru/open-browser.vim'
 
+"AOJ
+NeoBundle 'mopp/AOJ.vim'
 
 call neobundle#end()
 
@@ -117,8 +143,6 @@ let g:neocomplete#include_paths = {
 let g:cpp_class_scope_highlight = 1
 let g:cpp_experimental_template_highlight = 1
 
-"highlight Normal ctermbg=none
-
 "syntastic
 let g:syntastic_check_on_open=0
 let g:syntastic_check_on_wq=0
@@ -147,13 +171,35 @@ let g:quickrun_config = {
 \   "_" : {
 \       "outputter/buffer/split" : ":botright 3sp",
 \       "outputter/buffer/close_on_empty" : 1,
-\	"hook/time/enable" : 1
+\		"hook/time/enable" : 1
 \   },
 \   "tex" : {
-\	'command': 'ptex2pdf',
+\	'runner': 'vimproc',
+\	'runner/vimproc/updatetime' : 60,
+\	'command' : 'ptex2pdf',
 \	'exec': ['%c -l "%S:t:r.tex"','evince "%S:t:r.pdf"']
 \   },
+\	"tex2" : {
+\	'runner': 'vimproc',
+\	'runner/vimproc/updatetime' : 60,
+\	'command'  : 'platex',
+\	'exec' : ['%c %s','dvipdfmx %s:r.dvi','evince %s:r.pdf']
+\	}
+\
 \}
+
+let g:syntastic_tex_checkers=['chktex']
+
+cmap qr QuickRun
+cmap QR QuickRun
+
+command! -nargs=0 QC call CloseQuickRunWindow()
+function! CloseQuickRunWindow()
+    execute "normal \<c-c>\<c-w>jZZ"
+endfunction
+
+cmap qc QC
+nnoremap <expr><silent> <C-c> quickrun#is_running() ? quickrun#sweep_sessions() : "\<C-c>"
 
 "Markdown
 let g:vim_markdown_liquid=1
@@ -164,16 +210,57 @@ au BufRead,BufNewFile *.md set filetype=markdown
 "Previm
 cmap po PrevimOpen
 
-cmap qr QuickRun
-cmap QR QuickRun
+"AOJ
+let g:aoj#user_id = 'ry0u_yd'
 
-command! -nargs=0 QC call CloseQuickRunWindow()
-function! CloseQuickRunWindow()
-    execute "normal \<c-c>\<c-w>jZZ"
+" vim-indent-guides
+" let g:indent_guides_auto_colors=0
+" autocmd VimEnter,Colorscheme * :hi IndentGuidesOdd   ctermbg=110
+" autocmd VimEnter,Colorscheme * :hi IndentGuidesEven  ctermbg=140
+" let g:indent_guides_enable_on_vim_startup=1
+" let g:indent_guides_guide_size=1
+
+let g:indent_guides_enable_on_vim_startup=1
+let g:indent_guides_start_level=2
+let g:indent_guides_auto_colors=0
+autocmd VimEnter,Colorscheme * :hi IndentGuidesOdd  ctermbg=235
+autocmd VimEnter,Colorscheme * :hi IndentGuidesEven ctermbg=234
+let g:indent_guides_color_change_percent = 30
+let g:indent_guides_guide_size = 1
+
+"webdictサイトの設定
+let g:ref_source_webdict_sites = {
+\   'je': {
+\     'url': 'http://dictionary.infoseek.ne.jp/jeword/%s',
+\   },
+\   'ej': {
+\     'url': 'http://dictionary.infoseek.ne.jp/ejword/%s',
+\   },
+\   'wiki': {
+\     'url': 'http://ja.wikipedia.org/wiki/%s',
+\   },
+\ }
+let g:ref_source_webdict_sites.default = 'ej'
+ 
+function! g:ref_source_webdict_sites.je.filter(output)
+	return join(split(a:output, "\n")[15 :], "\n")
 endfunction
-cmap qc QC
 
-nnoremap <expr><silent> <C-c> quickrun#is_running() ? quickrun#sweep_sessions() : "\<C-c>"
+function! g:ref_source_webdict_sites.ej.filter(output)
+	return join(split(a:output, "\n")[15 :], "\n")
+endfunction
+function! g:ref_source_webdict_sites.wiki.filter(output)
+	return join(split(a:output, "\n")[17 :], "\n")
+endfunction
+
+nmap <Leader>rj :<C-u>Ref webdict je<Space>
+nmap <Leader>re :<C-u>Ref webdict ej<Space>
+
+"lightline
+let g:lightline = {
+\ 'colorscheme': 'wombat'
+\ }
+set laststatus=2
 
 imap <C-k>     <Plug>(neosnippet_expand_or_jump)
 smap <C-k>     <Plug>(neosnippet_expand_or_jump)
@@ -190,12 +277,41 @@ smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
 
 noremap <c-e> :<c-u>:call ExecuteNERDTree()<cr>
 
-
 "caw comment out"
 nmap <Leader>c <Plug>(caw:i:toggle)
 vmap <Leader>c <Plug>(caw:i:toggle)
 
-colorscheme ron
+"translate
+nnoremap <silent> tr :<C-u>ExciteTranslate<CR>
+"let &HTTP_PROXY='cache.ccs.kogakuin.ac.jp:8080'
+
+
+
+nnoremap ; :
+inoremap <silent> jj <ESC>
+inoremap {<Enter> {}<Left><CR><ESC><S-o>
+"inoremap [<Enter> []<Left><CR><ESC><S-o>
+"inoremap (<Enter> ()<Left><CR><ESC><S-o>
+
+
+"colorscheme wombat
+highlight Normal ctermbg=none
+
+set nocompatible
+set guifont=Monospace\ 10
+set guifont=DejaVu\ Sans\ Mono\ 10
+set tabstop=4
+set shiftwidth=4
+set nobackup
+set number
+set autoindent
+set smartindent
+set columns=106
+set lines=42
+
+"tab
+nmap <Tab> gt
+nmap <S-Tab> gT
 
 filetype plugin indent on     " required!
 filetype indent on

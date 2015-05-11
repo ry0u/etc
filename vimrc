@@ -4,8 +4,6 @@ if has("syntax")
   syntax on
 endif
 
-" The following are commented out as they cause vim to behave a lot
-" differently from regular Vi. They are highly recommended though.
 "set showcmd		" Show (partial) command in status line.
 "set showmatch		" Show matching brackets.
 "set ignorecase		" Do case insensitive matching
@@ -16,6 +14,30 @@ endif
 set mouse=a		" Enable mouse usage (all modes)
 set clipboard=unnamedplus
 set nf=alpha
+set nocompatible
+set guifont=Monospace\ 10
+set guifont=DejaVu\ Sans\ Mono\ 10
+set tabstop=4
+set shiftwidth=4
+set expandtab
+set nobackup
+set number
+set autoindent
+set smartindent
+set columns=106
+set lines=42
+
+nnoremap + <C-a>
+nnoremap - <C-x>
+nnoremap ; :
+inoremap <silent> jj <ESC>
+inoremap {<Enter> {}<Left><CR><ESC><S-o>
+"inoremap [<Enter> []<Left><CR><ESC><S-o>
+"inoremap (<Enter> ()<Left><CR><ESC><S-o>
+
+"tab
+nmap <Tab> gt
+nmap <S-Tab> gT
 
 " Source a global configuration file if available
 if filereadable("/etc/vim/vimrc.local")
@@ -101,8 +123,9 @@ NeoBundleCheck
 let file_name = expand("%:p")
 if has('vim_starting') &&  file_name == ""
     autocmd VimEnter * call ExecuteNERDTree()
+    autocmd VimEnter * call s:Transset("0.85")
 endif
- 
+
 " カーソルが外れているときは自動的にnerdtreeを隠す
 function! ExecuteNERDTree()
     "b:nerdstatus = 1 : NERDTree 表示中
@@ -135,7 +158,7 @@ let g:neocomplete#enable_at_startup = 1
 let g:neocomplete#auto_completion_start_length = 2
 let g:neocomplete#enable_underbar_completion = 1
 let g:neocomplete#include_paths = {
-			\ 'cpp' : '.,/usr/include/c++/4.8',
+\ 'cpp' : '.,/usr/include/c++/4.8',
 \ }
 
 
@@ -153,7 +176,7 @@ let g:syntastic_cpp_check_header = 1
 
 "include 
 let g:neocomplete#sources#include#paths ={
-			\ 'cpp': '.,/usr/include/c++/4.8',
+\ 'cpp': '.,/usr/include/c++/4.8',
 \ 'c': '.,/usr/include',
 \ 'ruby': '.,$HOME/.rvm/rubies/**/lib/ruby/1.8/',
 \ }
@@ -162,7 +185,7 @@ let g:neocomplete#sources#include#paths ={
 "neosnippet
 " Enable snipMate compatibility feature.
 let g:neosnippet#enable_snipmate_compatibility = 1
- 
+
 " Tell Neosnippet about the other snippets
 let g:neosnippet#snippets_directory='~/.vim/bundle/vim-snippets/snippets'
 
@@ -214,21 +237,14 @@ cmap po PrevimOpen
 let g:aoj#user_id = 'ry0u_yd'
 
 " vim-indent-guides
-" let g:indent_guides_auto_colors=0
-" autocmd VimEnter,Colorscheme * :hi IndentGuidesOdd   ctermbg=110
-" autocmd VimEnter,Colorscheme * :hi IndentGuidesEven  ctermbg=140
-" let g:indent_guides_enable_on_vim_startup=1
-" let g:indent_guides_guide_size=1
-
 let g:indent_guides_enable_on_vim_startup=1
 let g:indent_guides_start_level=2
 let g:indent_guides_auto_colors=0
-autocmd VimEnter,Colorscheme * :hi IndentGuidesOdd  ctermbg=235
-autocmd VimEnter,Colorscheme * :hi IndentGuidesEven ctermbg=234
-let g:indent_guides_color_change_percent = 30
-let g:indent_guides_guide_size = 1
+autocmd VimEnter,Colorscheme * :hi IndentGuidesOdd  guibg=#444433 ctermbg=black
+autocmd VimEnter,Colorscheme * :hi IndentGuidesEven guibg=#333344 ctermbg=darkgray
+let g:indent_guides_guide_size=1
 
-"webdictサイトの設定
+"webdict
 let g:ref_source_webdict_sites = {
 \   'je': {
 \     'url': 'http://dictionary.infoseek.ne.jp/jeword/%s',
@@ -265,7 +281,6 @@ set laststatus=2
 imap <C-k>     <Plug>(neosnippet_expand_or_jump)
 smap <C-k>     <Plug>(neosnippet_expand_or_jump)
 xmap <C-k>     <Plug>(neosnippet_expand_target)
-cmap nt NERDTree
 
 " SuperTab like snippets behavior.
 imap <expr><TAB> neosnippet#expandable_or_jumpable() ?
@@ -275,6 +290,7 @@ smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
 \ "\<Plug>(neosnippet_expand_or_jump)"
 \: "\<TAB>"
 
+cmap nt NERDTree
 noremap <c-e> :<c-u>:call ExecuteNERDTree()<cr>
 
 "caw comment out"
@@ -285,33 +301,14 @@ vmap <Leader>c <Plug>(caw:i:toggle)
 nnoremap <silent> tr :<C-u>ExciteTranslate<CR>
 "let &HTTP_PROXY='cache.ccs.kogakuin.ac.jp:8080'
 
-
-
-nnoremap ; :
-inoremap <silent> jj <ESC>
-inoremap {<Enter> {}<Left><CR><ESC><S-o>
-"inoremap [<Enter> []<Left><CR><ESC><S-o>
-"inoremap (<Enter> ()<Left><CR><ESC><S-o>
-
+"Transset
+function! s:Transset(opacity)
+    call system('transset --id ' . v:windowid . ' ' . a:opacity)
+endfunction
+command! -nargs=1 Transset call <SID>Transset(<q-args>) 
 
 "colorscheme wombat
 highlight Normal ctermbg=none
-
-set nocompatible
-set guifont=Monospace\ 10
-set guifont=DejaVu\ Sans\ Mono\ 10
-set tabstop=4
-set shiftwidth=4
-set nobackup
-set number
-set autoindent
-set smartindent
-set columns=106
-set lines=42
-
-"tab
-nmap <Tab> gt
-nmap <S-Tab> gT
 
 filetype plugin indent on     " required!
 filetype indent on

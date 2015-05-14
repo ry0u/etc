@@ -1,0 +1,40 @@
+MAIN    START
+        LD      GR1,KOSUU
+        LAD     GR2,DATA
+        LAD     GR3,MAX
+        LAD     GR6,LOC
+        CALL    SAIDAI
+        LD      GR0,MAX
+        LD      GR6,LOC
+        RET
+KOSUU   DC      4
+DATA    DC      25,15,8,20,3
+MAX     DS      1
+LOC     DS      1
+        END
+SAIDAI  START
+        PUSH    0,GR1
+        PUSH    0,GR2
+        PUSH    0,GR3
+        PUSH    0,GR4
+        PUSH    0,GR5
+        LAD     GR4,0
+        LD      GR5,0,GR2
+        ST      GR5,0,GR3
+LOOP    LAD     GR2,1,GR2
+        LAD     GR4,1,GR4
+        LD      GR5,0,GR2
+        CPA     GR5,0,GR3
+        JMI     SKIP
+        ST      GR5,0,GR3
+        ;LD      GR6,GR4
+        ST      GR4,LOC
+SKIP    CPA     GR1,GR4
+        JPL     LOOP
+        POP     GR5
+        POP     GR4
+        POP     GR3
+        POP     GR2
+        POP     GR1
+        RET
+        END

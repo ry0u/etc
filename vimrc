@@ -26,6 +26,10 @@ set autoindent
 set smartindent
 set columns=106
 set lines=42
+set t_Co=256
+colorscheme lucius
+set background=dark
+highlight Normal ctermbg=none
 
 nnoremap + <C-a>
 nnoremap - <C-x>
@@ -38,6 +42,7 @@ inoremap {<Enter> {}<Left><CR><ESC><S-o>
 "tab
 nmap <Tab> gt
 nmap <S-Tab> gT
+
 
 " Source a global configuration file if available
 if filereadable("/etc/vim/vimrc.local")
@@ -73,6 +78,9 @@ NeoBundle 'mattn/excitetranslate-vim'
 NeoBundle 'nathanaelkane/vim-indent-guides'
 NeoBundle 'gregsexton/VimCalc'
 NeoBundle 'thinca/vim-ref'
+NeoBundle 'tyru/restart.vim'
+NeoBundle 'kana/vim-submode'
+NeoBundle 'AndrewRadev/switch.vim'
 
 NeoBundle 'Shougo/vimproc.vim', {
 \ 'build' : {
@@ -173,6 +181,8 @@ let g:syntastic_check_on_wq=0
 let g:syntastic_c_check_header = 1
 " C++
 let g:syntastic_cpp_check_header = 1
+" Tex
+let g:syntastic_tex_checkers=['chktex']
 
 "include 
 let g:neocomplete#sources#include#paths ={
@@ -183,10 +193,7 @@ let g:neocomplete#sources#include#paths ={
 
 
 "neosnippet
-" Enable snipMate compatibility feature.
 let g:neosnippet#enable_snipmate_compatibility = 1
-
-" Tell Neosnippet about the other snippets
 let g:neosnippet#snippets_directory='~/.vim/bundle/vim-snippets/snippets'
 
 "quickrun
@@ -211,7 +218,6 @@ let g:quickrun_config = {
 \
 \}
 
-let g:syntastic_tex_checkers=['chktex']
 
 cmap qr QuickRun
 cmap QR QuickRun
@@ -257,7 +263,10 @@ let g:ref_source_webdict_sites = {
 \   },
 \ }
 let g:ref_source_webdict_sites.default = 'ej'
- 
+
+"restat
+let g:restart_sessionoptions = 'blank,curdir,folds,help,tabpages'
+
 function! g:ref_source_webdict_sites.je.filter(output)
 	return join(split(a:output, "\n")[15 :], "\n")
 endfunction
@@ -307,8 +316,43 @@ function! s:Transset(opacity)
 endfunction
 command! -nargs=1 Transset call <SID>Transset(<q-args>) 
 
-"colorscheme wombat
-highlight Normal ctermbg=none
+" submode.vim
+" " http://d.hatena.ne.jp/thinca/20130131/1359567419
+" " ウィンドウサイズの変更キーを簡易化する
+" " [C-w],[+]または、[C-w],[-]
+call submode#enter_with('winsize', 'n', '', '<C-w>>', '<C-w>>')
+call submode#enter_with('winsize', 'n', '', '<C-w><', '<C-w><')
+call submode#enter_with('winsize', 'n', '', '<C-w>+', '<C-w>-')
+call submode#enter_with('winsize', 'n', '', '<C-w>-', '<C-w>+')
+call submode#map('winsize', 'n', '', '>', '<C-w>>')
+call submode#map('winsize', 'n', '', '<', '<C-w><')
+call submode#map('winsize', 'n', '', '+', '<C-w>-')
+call submode#map('winsize', 'n', '', '-', '<C-w>+')
+
+"YankRing
+nmap ,y :YRShow<CR>
+
+"undotree.vim
+nmap <Leader>u :UndotreeToggle<CR>
+let g:undotree_SetFocusWhenToggle = 1
+let g:undotree_WindowLayout = 'topleft'
+let g:undotree_SplitWidth = 35
+let g:undotree_diffAutoOpen = 1
+let g:undotree_diffpanelHeight = 25
+let g:undotree_RelativeTimestamp = 1
+let g:undotree_TreeNodeShape = '*'
+let g:undotree_HighlightChangedText = 1
+let g:undotree_HighlightSyntax = "UnderLined"
+
+"java syntax highlight
+let g:java_highlight_all=1
+let g:java_highlight_debug=1
+let g:java_allow_cpp_keywords=1
+let g:java_highlight_functions=1
+
+" switch.vim
+" nnoremap * :call switch#Switch(g:variable_style_switch_definitions)<cr>
+nnoremap * :Switch<cr>
 
 filetype plugin indent on     " required!
 filetype indent on

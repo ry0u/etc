@@ -8,7 +8,7 @@ MAIN    START
         LD      GR6,LOC
         RET
 KOSUU   DC      4
-DATA    DC      25,15,8,20,3
+DATA    DC      1,15,8,20,3
 MAX     DS      1
 LOC     DS      1
         END
@@ -28,7 +28,7 @@ LOOP    LAD     GR2,1,GR2
         CPA     GR5,0,GR3
         JMI     SKIP
         ST      GR5,0,GR3
-        LD      GR6,GR4
+        ST      GR4,0,GR6
 SKIP    CPA     GR1,GR4
         JPL     LOOP
         POP     GR6

@@ -607,7 +607,7 @@ abbr        s:0->t:n+m+1
 snippet Eratosthenes
 abbr prime
     bool prime[10000000];
-    void Eratosthenes(int n {
+    void Eratosthenes(int n) {
 		rep(i,n) prime[i] = true;
 		prime[1] = false;
   
@@ -641,4 +641,43 @@ abbr a*x+b*y=1
 		return g;
     }
 
+snippet mod_inverse
+abbr inverse
+	ll mod_inverse(ll a,ll m) {
+		ll x,y;
+		extgcd(a,m,x,y);
+		return (m + x%m) % m;
+	}
+
+# -------------------- STL ------------------
+snippet remove
+abbr remove
+	v.erase(remove(v.begin(),v.end(),${0}),v.end());
+
+snippet unique
+abbr unique
+	v.erase(unique(v.begin(),v.end()),v.end());
+
+snippet rotate
+abbr rotate
+	rotate(v.begin(),v.begin()+${0},v.end());
+
+snippet copy
+abbr iterator v -> v2
+	copy(v.begin(),v.end(),back_inserter(v2));
+
+
+
+# ------------------- search -----------------
+snippet meiro
+abbr meiro def
+	int w,h,x,y;
+	int sx,sy,gx,gy;
+	int dx[4] = {1,0,-1,0};
+	int dy[4] = {0,1,0,-1};
+
+	bool can(int y,int x) {
+		if(0 <= y && y < h && 0 <= x && x < w) return true;
+		return false;
+	}
 

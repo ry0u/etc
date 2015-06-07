@@ -15,7 +15,7 @@ set mouse=a		" Enable mouse usage (all modes)
 set clipboard=unnamedplus
 set nf=alpha
 set nocompatible
-set guifont=Monospace\ 10
+" set guifont=Monospace\ 10
 set guifont=DejaVu\ Sans\ Mono\ 10
 set tabstop=4
 set shiftwidth=4
@@ -24,6 +24,7 @@ set nobackup
 set number
 set autoindent
 set smartindent
+set hlsearch
 set columns=106
 set lines=42
 set t_Co=256
@@ -38,11 +39,22 @@ inoremap <silent> jj <ESC>
 inoremap {<Enter> {}<Left><CR><ESC><S-o>
 "inoremap [<Enter> []<Left><CR><ESC><S-o>
 "inoremap (<Enter> ()<Left><CR><ESC><S-o>
+inoremap <C-j> <Down>
+inoremap <C-k> <Up>
+inoremap <C-h> <Left>
+inoremap <C-l> <Right>
 
-"tab
+nnoremap n nzz
+nnoremap N Nzz
+nnoremap * *zz
+nnoremap # #zz
+nnoremap g* g*zz
+nnoremap g# g#zz
+
 nmap <Tab> gt
 nmap <S-Tab> gT
-
+vnoremap <silent> * "vy/\V<C-r>=substitute(escape(@v, '\/'), "\n", '\\n', 'g')<CR><CR>
+nmap <silent> <Esc><Esc> :nohlsearch<CR>
 
 " Source a global configuration file if available
 if filereadable("/etc/vim/vimrc.local")
@@ -81,6 +93,10 @@ NeoBundle 'thinca/vim-ref'
 NeoBundle 'tyru/restart.vim'
 NeoBundle 'kana/vim-submode'
 NeoBundle 'AndrewRadev/switch.vim'
+NeoBundleLazy "sjl/gundo.vim", {
+\ "autoload": {
+\   "commands": ['GundoToggle'],
+\ }}
 
 NeoBundle 'Shougo/vimproc.vim', {
 \ 'build' : {
@@ -113,6 +129,30 @@ NeoBundle 'ujihisa/neco-ghc'
 NeoBundle 'vim-jp/cpp-vim'
 NeoBundle 'octol/vim-cpp-enhanced-highlight'
 
+"dlang
+NeoBundle 'JesseKPhillips/d.vim'
+
+"Python
+NeoBundleLazy "davidhalter/jedi-vim"
+NeoBundleLazy "vim-pandoc/vim-pandoc", {
+\ "autoload": {
+\   "filetypes": ["text", "pandoc", "markdown", "rst", "textile"],
+\ }}
+
+" java
+NeoBundle 'tpope/vim-classpath'
+NeoBundle 'KamunagiChiduru/unite-javaimport', {
+\   'depends': ['Shougo/unite.vim', 'yuratomo/w3m.vim'],
+\}
+
+NeoBundleLazy 'vim-scripts/javacomplete', {
+\   'build': {
+\       'cygwin': 'javac autoload/Reflection.java',
+\       'mac': 'javac autoload/Reflection.java',
+\       'unix': 'javac autoload/Reflection.java',
+\   },
+\}
+
 "Markdown
 NeoBundle "godlygeek/tabular"
 NeoBundle "joker1007/vim-markdown-quote-syntax"
@@ -120,25 +160,35 @@ NeoBundle "rcmdnk/vim-markdown"
 NeoBundle 'tukiyo/previm'
 NeoBundle 'tyru/open-browser.vim'
 
+"HTML
+NeoBundle 'hokaccha/vim-html5validator'
+NeoBundle 'hail2u/vim-css3-syntax'
+NeoBundle 'othree/html5.vim'
+
 "AOJ
 NeoBundle 'mopp/AOJ.vim'
+
+"Twitter
+NeoBundle 'basyura/TweetVim'
+NeoBundle 'basyura/twibill.vim'
+NeoBundle 'h1mesuke/unite-outline'
+NeoBundle 'mattn/favstar-vim'
+
 
 call neobundle#end()
 
 NeoBundleCheck
-""NeoBundle 'https://bitbucket.org/kovisoft/slimv'
 
 let file_name = expand("%:p")
 if has('vim_starting') &&  file_name == ""
     autocmd VimEnter * call ExecuteNERDTree()
+endif
+
+if has('vim_starting')
     autocmd VimEnter * call s:Transset("0.85")
 endif
 
-" カーソルが外れているときは自動的にnerdtreeを隠す
 function! ExecuteNERDTree()
-    "b:nerdstatus = 1 : NERDTree 表示中
-    "b:nerdstatus = 2 : NERDTree 非表示中
- 
     if !exists('g:nerdstatus')
         execute 'NERDTree ./'
         let g:windowWidth = winwidth(winnr())
@@ -159,7 +209,8 @@ function! ExecuteNERDTree()
 endfunction
 
 setlocal path+="/usr/include/c++/4.8"
-
+"let &l:include = '^\s*\%(\%(public\|static\)\s\+\)\?\<import'
+"let &l:includeexpr = 'substitute(substitute(v:fname, "\\.", "/", "g"), "$", ".d", "")'
 
 "neocomplete
 let g:neocomplete#enable_at_startup = 1
@@ -167,6 +218,7 @@ let g:neocomplete#auto_completion_start_length = 2
 let g:neocomplete#enable_underbar_completion = 1
 let g:neocomplete#include_paths = {
 \ 'cpp' : '.,/usr/include/c++/4.8',
+\ 'd': '.,/usr/include/dmd/phobos'
 \ }
 
 
@@ -177,20 +229,19 @@ let g:cpp_experimental_template_highlight = 1
 "syntastic
 let g:syntastic_check_on_open=0
 let g:syntastic_check_on_wq=0
-" C
 let g:syntastic_c_check_header = 1
-" C++
 let g:syntastic_cpp_check_header = 1
-" Tex
 let g:syntastic_tex_checkers=['chktex']
+let g:syntastic_java_javac_config_file_enabled = 1
+
 
 "include 
 let g:neocomplete#sources#include#paths ={
 \ 'cpp': '.,/usr/include/c++/4.8',
 \ 'c': '.,/usr/include',
 \ 'ruby': '.,$HOME/.rvm/rubies/**/lib/ruby/1.8/',
+\ 'd': '.,/usr/include/dmd/phobos',
 \ }
-
 
 "neosnippet
 let g:neosnippet#enable_snipmate_compatibility = 1
@@ -287,6 +338,7 @@ let g:lightline = {
 \ }
 set laststatus=2
 
+"neosnippet
 imap <C-k>     <Plug>(neosnippet_expand_or_jump)
 smap <C-k>     <Plug>(neosnippet_expand_or_jump)
 xmap <C-k>     <Plug>(neosnippet_expand_target)
@@ -299,7 +351,6 @@ smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
 \ "\<Plug>(neosnippet_expand_or_jump)"
 \: "\<TAB>"
 
-cmap nt NERDTree
 noremap <c-e> :<c-u>:call ExecuteNERDTree()<cr>
 
 "caw comment out"
@@ -316,9 +367,18 @@ function! s:Transset(opacity)
 endfunction
 command! -nargs=1 Transset call <SID>Transset(<q-args>) 
 
+"set guifont
+function! s:ChangeFontSize(size)
+    execute ':set guifont=DejaVu\ Sans\ Mono\' a:size
+endfunction
+command! -nargs=1 CF call <SID>ChangeFontSize(<q-args>)
+
+"contest
+function! s:MakeProblem()
+    
+endfunction
+
 " submode.vim
-" " http://d.hatena.ne.jp/thinca/20130131/1359567419
-" " ウィンドウサイズの変更キーを簡易化する
 " " [C-w],[+]または、[C-w],[-]
 call submode#enter_with('winsize', 'n', '', '<C-w>>', '<C-w>>')
 call submode#enter_with('winsize', 'n', '', '<C-w><', '<C-w><')
@@ -350,9 +410,18 @@ let g:java_highlight_debug=1
 let g:java_allow_cpp_keywords=1
 let g:java_highlight_functions=1
 
+autocmd FileType java :setlocal omnifunc=javacomplete#Complete
+autocmd FileType java :setlocal completefunc=javacomplete#CompleteParamsInfo
+
 " switch.vim
 " nnoremap * :call switch#Switch(g:variable_style_switch_definitions)<cr>
-nnoremap * :Switch<cr>
+nnoremap T :Switch<cr>
+
+" gundo.vim 
+nnoremap <Leader>g :GundoToggle<CR>
+
+" python
+autocmd FileType python setlocal completeopt-=preview
 
 filetype plugin indent on     " required!
 filetype indent on

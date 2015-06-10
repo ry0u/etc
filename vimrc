@@ -25,6 +25,8 @@ set number
 set autoindent
 set smartindent
 set hlsearch
+set splitbelow
+set splitright
 set columns=106
 set lines=42
 set t_Co=256
@@ -32,6 +34,13 @@ colorscheme lucius
 set background=dark
 highlight Normal ctermbg=none
 
+
+noremap j gj
+noremap k gk
+noremap <S-h>   ^
+noremap <S-j>   }
+noremap <S-k>   {
+noremap <S-l>   $
 nnoremap + <C-a>
 nnoremap - <C-x>
 nnoremap ; :
@@ -71,16 +80,18 @@ call neobundle#begin(expand('~/.vim/bundle'))
 NeoBundle 'Shougo/neobundle.vim'
 NeoBundle 'Shougo/unite.vim'
 NeoBundle 'ujihisa/unite-colorscheme'
+NeoBundle 'Shougo/vimshell.vim'
+NeoBundle 'Shougo/vimfiler'
 NeoBundle 'scrooloose/nerdtree'
 NeoBundle "Shougo/neocomplete.vim"
 NeoBundle 'Shougo/neosnippet'
 NeoBundle 'Shougo/neosnippet-snippets'
 NeoBundle "scrooloose/syntastic"
-"NeoBundle 'Townk/vim-autoclose'
 NeoBundle 'thinca/vim-quickrun'
 NeoBundle "tyru/caw.vim.git"
+NeoBundle 'Lokaltog/vim-easymotion'
 NeoBundle 'itchyny/lightline.vim'
-"NeoBundle 'bronson/vim-trailing-whitespace'
+NeoBundle 'sudo.vim'
 NeoBundle 'YankRing.vim'
 NeoBundle 'mbbill/undotree'
 NeoBundle 'troydm/easybuffer.vim'
@@ -97,6 +108,8 @@ NeoBundleLazy "sjl/gundo.vim", {
 \ "autoload": {
 \   "commands": ['GundoToggle'],
 \ }}
+NeoBundle 'tpope/vim-endwise'
+NeoBundle 'itchyny/calendar.vim'
 
 NeoBundle 'Shougo/vimproc.vim', {
 \ 'build' : {
@@ -119,6 +132,7 @@ NeoBundle 'jpo/vim-railscasts-theme'
 NeoBundle 'altercation/vim-colors-solarized'
 NeoBundle 'vim-scripts/Wombat'
 NeoBundle 'vim-scripts/rdark'
+NeoBundle 'flazz/vim-colorschemes'
 
 "haskell
 NeoBundle 'kana/vim-filetype-haskell'
@@ -144,7 +158,6 @@ NeoBundle 'tpope/vim-classpath'
 NeoBundle 'KamunagiChiduru/unite-javaimport', {
 \   'depends': ['Shougo/unite.vim', 'yuratomo/w3m.vim'],
 \}
-
 NeoBundleLazy 'vim-scripts/javacomplete', {
 \   'build': {
 \       'cygwin': 'javac autoload/Reflection.java',
@@ -153,17 +166,29 @@ NeoBundleLazy 'vim-scripts/javacomplete', {
 \   },
 \}
 
+" Ruby
+NeoBundle 'vim-ruby/vim-ruby'
+
 "Markdown
 NeoBundle "godlygeek/tabular"
 NeoBundle "joker1007/vim-markdown-quote-syntax"
-NeoBundle "rcmdnk/vim-markdown"
+NeoBundle 'rcmdnk/vim-markdown'
 NeoBundle 'tukiyo/previm'
 NeoBundle 'tyru/open-browser.vim'
 
-"HTML
+"HTML/CSS/Javascript
 NeoBundle 'hokaccha/vim-html5validator'
 NeoBundle 'hail2u/vim-css3-syntax'
 NeoBundle 'othree/html5.vim'
+NeoBundle 'ap/vim-css-color'
+NeoBundle 'pangloss/vim-javascript'
+NeoBundle 'othree/javascript-libraries-syntax.vim'
+NeoBundle 'moll/vim-node'
+NeoBundle 'mattn/jscomplete-vim'
+NeoBundle 'myhere/vim-nodejs-complete'
+
+" json
+NeoBundle 'elzr/vim-json'
 
 "AOJ
 NeoBundle 'mopp/AOJ.vim'
@@ -187,6 +212,9 @@ endif
 if has('vim_starting')
     autocmd VimEnter * call s:Transset("0.85")
 endif
+
+" vimshell
+nnoremap <Space>v  :vs<CR>:<C-u>VimShell<CR>
 
 function! ExecuteNERDTree()
     if !exists('g:nerdstatus')
@@ -285,6 +313,7 @@ nnoremap <expr><silent> <C-c> quickrun#is_running() ? quickrun#sweep_sessions() 
 let g:vim_markdown_liquid=1
 let g:vim_markdown_frontmatter=1
 let g:vim_markdown_math=1
+let g:vim_markdown_folding_disabled=1
 au BufRead,BufNewFile *.md set filetype=markdown
 
 "Previm

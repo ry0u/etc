@@ -33,7 +33,8 @@ set t_Co=256
 colorscheme lucius
 set background=dark
 highlight Normal ctermbg=none
-
+autocmd FileType html colorscheme molokai
+autocmd FileType json colorscheme af
 
 noremap j gj
 noremap k gk
@@ -199,6 +200,9 @@ NeoBundle 'basyura/twibill.vim'
 NeoBundle 'h1mesuke/unite-outline'
 NeoBundle 'mattn/favstar-vim'
 
+"Aruduio
+NeoBundle "sudar/vim-arduino-syntax"
+
 
 call neobundle#end()
 
@@ -206,7 +210,8 @@ NeoBundleCheck
 
 let file_name = expand("%:p")
 if has('vim_starting') &&  file_name == ""
-    autocmd VimEnter * call ExecuteNERDTree()
+    " autocmd VimEnter * call ExecuteNERDTree()
+    autocmd VimEnter * VimFilerCurrentDir -split -winwidth=30 -no-quit
 endif
 
 if has('vim_starting')
@@ -216,25 +221,29 @@ endif
 " vimshell
 nnoremap <Space>v  :vs<CR>:<C-u>VimShell<CR>
 
-function! ExecuteNERDTree()
-    if !exists('g:nerdstatus')
-        execute 'NERDTree ./'
-        let g:windowWidth = winwidth(winnr())
-        let g:nerdtreebuf = bufnr('')
-        let g:nerdstatus = 1
- 
-    elseif g:nerdstatus == 1
-        execute 'wincmd t'
-        execute 'vertical resize' 0
-        execute 'wincmd p'
-        let g:nerdstatus = 2
-    elseif g:nerdstatus == 2
-        execute 'wincmd t'
-        execute 'vertical resize' g:windowWidth
-        let g:nerdstatus = 1
- 
-    endif
-endfunction
+" function! ExecuteNERDTree()
+"     if !exists('g:nerdstatus')
+"         execute 'NERDTree ./'
+"         let g:windowWidth = winwidth(winnr())
+"         let g:nerdtreebuf = bufnr('')
+"         let g:nerdstatus = 1
+" 
+"     elseif g:nerdstatus == 1
+"         execute 'wincmd t'
+"         execute 'vertical resize' 0
+"         execute 'wincmd p'
+"         let g:nerdstatus = 2
+"     elseif g:nerdstatus == 2
+"         execute 'wincmd t'
+"         execute 'vertical resize' g:windowWidth
+"         let g:nerdstatus = 1
+"     endif
+" endfunction
+
+let g:vimfiler_as_default_explorer = 1
+let g:vimfiler_safe_mode_by_default = 0
+let g:netrw_liststyle = 3
+let g:netrw_altv = 1
 
 setlocal path+="/usr/include/c++/4.8"
 "let &l:include = '^\s*\%(\%(public\|static\)\s\+\)\?\<import'

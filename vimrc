@@ -33,7 +33,7 @@ set t_Co=256
 colorscheme lucius
 set background=dark
 highlight Normal ctermbg=none
-autocmd FileType html colorscheme molokai
+autocmd FileType html,javascript colorscheme molokai
 autocmd FileType json colorscheme af
 
 noremap j gj
@@ -327,6 +327,13 @@ au BufRead,BufNewFile *.md set filetype=markdown
 
 "Previm
 cmap po PrevimOpen
+
+"open-browser
+" カーソル下のURLをブラウザで開く
+nmap <Leader>o <Plug>(openbrowser-open)
+vmap <Leader>o <Plug>(openbrowser-open)
+" ググる
+nnoremap <Leader>gg :<C-u>OpenBrowserSearch<Space><C-r><C-w><Enter>
 
 "AOJ
 let g:aoj#user_id = 'ry0u_yd'

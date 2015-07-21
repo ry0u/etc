@@ -20,8 +20,6 @@ endif
 
 colorscheme desert
 colorscheme lucius
-"highlight Normal ctermbg=none
-
 syntax on
 
 set nocompatible
@@ -30,12 +28,15 @@ set guifont=DejaVu\ Sans\ Mono\ 10
 "set guifont=Ricty\ 10
 set tabstop=4
 set shiftwidth=4
+set expandtab
 set nobackup
 set number
 set autoindent
 set smartindent
 set columns=106
 set lines=42
+set guioptions-=m
+set guioptions-=T
 
 "tab
 nmap <Tab> gt

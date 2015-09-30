@@ -158,6 +158,38 @@ abbr samesplit
 		return ret;
 	}
 
+snippet stringplus
+abbr stringplus
+	string func(string a,string b) {
+		string ret;
+		if(a.size() < b.size()) swap(a,b);
+
+		reverse(a.begin(),a.end());
+		reverse(b.begin(),b.end());
+
+		int carry = 0;
+		rep(i,b.size()) {
+			int x = a[i] - '0';
+			int y = b[i] - '0';
+			int z = x + y + carry;
+
+			carry = z / 10;
+			ret.push_back('0' + (z%10));
+		}
+
+		REP(i,b.size(),a.size()) {
+			int x = a[i] - '0';
+			int z = x + carry;
+
+			carry = z / 10;
+			ret.push_back('0' + (z%10));
+		}
+
+		if(carry) ret.push_back('0' + carry);
+		reverse(ret.begin(),ret.end());
+		return ret;
+	}
+
 #---------- data struct ---------------
 
 snippet     unionfind
@@ -208,44 +240,93 @@ abbr        UnionFind
 		}
     };
 
-snippet     RMQ
-abbr        RangeMinimumQuery
-    struct RMQ {
+snippet     RMQ-max
+abbr        RangeMaximumQuery
+	struct RMQ {
 		int n;
 		vector<int> dat;
 
 		RMQ(int n_) {
 			n = 1;
 			while(n < n_) n *= 2;
-   
+
 			dat.resize(n*4);
-			rep(i,n*4) dat[i] = INF;
+			rep(i,n*4) dat[i] = -INF;
 		}
-  
+
 		void update(int k,int a) {
 			int i = k+n-1;
 			dat[i] = a;
-   
+
+			while(i > 0) {
+				i = (i-1) / 2;
+				dat[i] = max(dat[i*2+1],dat[i*2+2]);
+			}
+		}
+
+		//[a,b)
+		//query(a,b,0,0,n)
+		int _query(int a,int b,int k,int l,int r)
+		{
+			if(r <= a || b <= l) return -INF;
+
+			if(a <= l && r <= b) return dat[k];
+			else { 
+				int vl = _query(a,b,k*2+1,l,(l+r)/2);
+				int vr = _query(a,b,k*2+2,(l+r)/2,r);
+				return max(vl,vr);
+			}
+		}
+
+		//[a,b)
+		int query(int a,int b) {
+			return _query(a,b,0,0,n);
+		}
+	};
+
+snippet     RMQ-min
+abbr        RangeMinimumQuery
+	struct RMQ {
+		int n;
+		vector<int> dat;
+
+		RMQ(int n_) {
+			n = 1;
+			while(n < n_) n *= 2;
+
+			dat.resize(n*4);
+			rep(i,n*4) dat[i] = -INF;
+		}
+
+		void update(int k,int a) {
+			int i = k+n-1;
+			dat[i] = a;
+
 			while(i > 0) {
 				i = (i-1) / 2;
 				dat[i] = min(dat[i*2+1],dat[i*2+2]);
 			}
 		}
-  
+
 		//[a,b)
 		//query(a,b,0,0,n)
-		int query(int a,int b,int k,int l,int r)
+		int _query(int a,int b,int k,int l,int r)
 		{
-			if(r <= a || b <= l) return INF;
-   
+			if(r <= a || b <= l) return -INF;
+
 			if(a <= l && r <= b) return dat[k];
 			else { 
-				int vl = query(a,b,k*2+1,l,(l+r)/2);
-				int vr = query(a,b,k*2+2,(l+r)/2,r);
+				int vl = _query(a,b,k*2+1,l,(l+r)/2);
+				int vr = _query(a,b,k*2+2,(l+r)/2,r);
 				return min(vl,vr);
 			}
 		}
-    };
+
+		//[a,b)
+		int query(int a,int b) {
+			return _query(a,b,0,0,n);
+		}
+	};
 
 snippet BIT
 abbr Binary Indexed Tree
@@ -316,8 +397,53 @@ abbr Trie Tree
 		}
     };
 
+snippet     SuffixArray
+abbr        SuffixArray
+	int rank[100005],tmp[100005];
+	bool compare_sa(int i,int j) {
+		if(rank[i] != rank[j]) return rank[i] < rank[j];
+		else {
+			int ri = i + k <= n ? rank[i+k] : -1;
+			int rj = j + k <= n ? rank[j+k] : -1;
+			return ri < rj;
+		}
+	}
 
+	void construct_sa(string s,int *sa) {
+		n = s.size();
 
+		for(int i=0; i <= n; i++ ) {
+			sa[i] = i;
+			rank[i] = i < n ? s[i] : -1;
+		}
+
+		for(k = 1; k <= n; k *= 2) {
+			sort(sa, sa+n+1, compare_sa);
+
+			tmp[sa[0]] = 0;
+			for(int i=1 ; i <= n; i++) {
+				tmp[sa[i]] = tmp[sa[i-1]] + (compare_sa(sa[i-1], sa[i]) ? 1 : 0);
+			}
+
+			for(int i=0; i <= n; i++) {
+				rank[i] = tmp[i];
+			}
+		}
+	}
+
+snippet     sa_contain
+abbr        SuffixArray-contain
+	bool contain(string s,int *sa,string t) {
+		int l = 0, r = s.size();
+		while(r - l > 1) {
+			int mid = (l+r) / 2;
+
+			if(s.compare(sa[mid],t.size(),t) < 0) l = mid;
+			else r = mid;
+		}
+
+		return s.compare(sa[r],t.size(),t) == 0;
+	}
 
 #------------- geometory------------------
 snippet to_rad
@@ -454,13 +580,13 @@ abbr convex_hull
 
 snippet Seg
 abbr segment2
-    struct Seg {
+	struct Seg {
 		Point a,b;
-  
+
 		Seg (Point a, Point b) : a(a),b(b) {}
-  
+
 		bool isOrthogonal(Seg &s) { return equals((b - a).dot(s.b - s.a),0.0); }
-  
+
 		bool isParallel(Seg &s) { return equals((b-a).cross(s.b - s.a),0.0); }
 
 		bool isIntersect(Seg &s) {
@@ -469,22 +595,88 @@ abbr segment2
 			}
 			return ((a-b).cross(s.a-a) * (a-b).cross(s.b-a) < EPS) && ((s.b-s.a).cross(a-s.a)*(s.b-s.a).cross(b-s.a) < EPS);
 		}
-  
+
 		bool distance(Seg &s) {
 			if((*this).isIntersect(s)) return 0.0;
-   
+
 			return min(min(a.distance_seg(s.a,s.b),b.distance_seg(s.a,s.b)),min(s.a.distance_seg(a,b),s.b.distance_seg(a,b)));
 		}
-  
+
 		Point getCrossPoint(Seg &s) {
 			Point p = s.b - s.a;
 			double d = abs(p.cross(a-s.a));
 			double d2 = abs(p.cross(b-s.a));
-   
+
 			double t = d / (d+d2);
 			return a + (b-a)*t;
-		}        
-    };
+		}
+
+		Point project(Point &p) {
+			Point base = b - a;
+			double t = base.dot(p-a) / base.dot(base);
+			return a + base * t;
+		}
+
+		Point reflect(Point &p) {
+			return p + (project(p) - p) * 2.0;
+		}
+	};
+
+snippet Circle
+abbr circle
+	struct Circle {
+		Point p;
+		double r;
+
+		Circle() : p(Point(0,0)), r(0) {}
+
+		Circle(Point o, double r) : p(o), r(r) {}
+
+		Circle(double x,double y, double r) : p(Point(x,y)), r(r) {}
+
+		bool isCircleIn(const Point& o) {
+			Point res = o-p;
+			return res.dot(res) < r*r + EPS;
+		}
+
+		// 1:外で接する，0:交差なし，-1:内で接する，2:交差，-2:内包
+		int isIntersect(const Circle& c) {
+			double d = (c.p - p).dot(c.p - p);
+			double len = (c.r + r) * (c.r + r);
+
+			if(equals(d,len)) return 1;
+			if(d > len) return 0;
+
+			double R = fabs(c.r - r) * fabs(c.r - r);
+			if(equals(d,R)) return -1;
+			if(d > R) return 2;
+			return -2;
+		}
+
+		vector<Point> getCrossPoint(const Circle& c) {
+			vector<Point> ret;
+			int ch = isIntersect(c);
+
+			if(ch == 0 || ch == -2) return ret;
+
+			Point base = c.p - p;
+			double len = base.dot(base);
+			double t = (r*r - c.r*c.r + len) / (2.0 * len);
+
+			if(ch == 2) {
+				Point n(-base.y,base.x);
+				n = n / (n.norm());
+				double h = sqrt(r * r - t*t*len);
+
+				ret.push_back(p + (base*t) + (n*h));
+				ret.push_back(p + (base*t) - (n*h));
+			} else {
+				ret.push_back(p + (base*t));
+			}
+
+			return ret;
+		}
+	};
 
 #------------- graph theory------------------
 
@@ -501,6 +693,26 @@ abbr edge
 			return cost < e.cost;
 		}
 	};
+
+snippet find_negative_loop
+abbr need vector<edge> E
+	bool find_negative_loop(int n) {
+		memset(d,0,sizeof(d));
+		
+		rep(i,n) {
+			rep(j,E.size()) {
+				edge e = E[j];
+				if(d[e.to] > d[e.from] + e.cost) {
+					d[e.to] = d[e.from] + e.cost;
+
+					if(i == n-1) return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
 
 snippet dijkstra
 abbr G,d and edge
@@ -537,6 +749,21 @@ abbr prev
 		return path;
     }
 
+snippet warshall_floyd
+abbr warshall_floyd
+	void warshall_floyd(int n) {
+		rep(i,n) rep(j,n) d[i][j] = INF;
+		rep(i,n) d[i][i] = 0;
+
+		rep(k,n) {
+			rep(i,n) {
+				rep(j,n) {
+					d[i][j] = min(d[i][j],d[i][k] + d[k][j]);
+				}
+			}
+		}
+	}
+
 snippet     kruskal
 abbr        kruskal
     int kruskal(int n,vector<edge> v) {
@@ -553,6 +780,117 @@ abbr        kruskal
 		}
 		return ret;
     }
+
+snippet minimum_spanning_arborescence
+abbr Chu-Liu,Edmond
+	void backward_traverse(int v,int s,int r,vector<edge> gg[],vector<int> &no,vector<vector<int> > &comp,vector<int> &prev,vector<vector<int> > &next,vector<int> &mcost,vector<int> &mark,int &cost,bool &found,int n) {
+
+		if(mark[v]) {
+			vector<int> temp = no;
+			found = true;
+
+			do {
+				cost += mcost[v];
+				v = prev[v];
+
+				if(v != s) {
+					while(comp[v].size() > 0) {
+						no[comp[v].back()] = s;
+						comp[s].push_back(comp[v].back());
+						comp[v].pop_back();
+					}
+				}
+			}while(v != s);
+
+			rep(k,comp[s].size()) {
+				int j = comp[s][k];
+				if(j != r) {
+					rep(l,gg[j].size()) {
+						if(no[gg[j][l].from] != s) {
+							gg[j][l].cost -= mcost[temp[j]];
+						}
+					}
+				}
+			}
+		}
+
+		mark[v] = true;
+		rep(k,next[v].size()) {
+			int i = next[v][k];
+			if(no[i] != no[v] && prev[no[i]] == v) {
+				if(!mark[no[i]] || i == s) {
+					backward_traverse(i,s,r,gg,no,comp,prev,next,mcost,mark,cost,found,n);
+				}
+			}
+		}
+	}
+
+	int minimum_spanning_arborescence(vector<edge> G[],int n,int r) {
+		vector<edge> gg[n];
+
+		rep(i,n) {
+			rep(j,G[i].size()) {
+				edge e = G[i][j];
+				gg[e.to].push_back(e);
+			}
+		}
+
+		vector<int> no(n);
+		vector<vector<int> > comp(n);
+
+		rep(i,n) {
+			no[i] = i;
+			comp[i].push_back(i);
+		}
+
+		int cost = 0;
+		while(true) {
+			vector<int> prev(n,-1);
+			vector<int> mcost(n,INF);
+
+			rep(j,n) {
+				if(j == r) continue;
+
+				rep(k,gg[j].size()) {
+					int i = gg[j][k].from;
+
+					if(no[i] != no[j]) {
+						if(gg[j][k].cost < mcost[no[j]]) {
+							mcost[no[j]] = gg[j][k].cost;
+							prev[no[j]] = no[i];
+						}
+					}
+				}
+			}
+
+			vector<vector<int> > next(n);
+			rep(i,n) {
+				if(prev[i] >= 0) {
+					next[prev[i]].push_back(i);
+				}
+			}
+
+			bool stop = true;
+			vector<int> mark(n);
+			rep(i,n) {
+				if(i == r || mark[i] || comp[i].size() == 0) continue;
+				
+				bool found = false;
+				backward_traverse(i,i,r,gg,no,comp,prev,next,mcost,mark,cost,found,n);
+
+				if(found) stop = false;
+			}
+
+			if(stop) {
+				rep(i,n) {
+					if(prev[i] >= 0) cost += mcost[i];
+				}
+
+				return cost;
+			}
+		}
+	}
+
 
 snippet     max_flow
 abbr        s:0->t:n+m+1
@@ -602,6 +940,19 @@ abbr        s:0->t:n+m+1
 		}
     }
 
+snippet tpologicalsort
+abbr toposo for dfs
+	void dfs(int cur) {
+		used[cur] = true;
+		rep(i,G[cur].size()) {
+			int v = G[cur][i].to;
+			if(!used[v]) dfs(v);
+		}
+
+		out.push_back(cur);
+	}
+
+
 # ------------------- number theory ----------------
 
 snippet Eratosthenes
@@ -618,6 +969,60 @@ abbr prime
 				}
 			}
 		}
+	}
+
+snippet is_prime
+abbr is_prime
+	bool is_prime(ll n) {
+		for(ll i = 2; i*i <= n; i++) {
+			if(n % i == 0) return false;
+		}
+		return true;
+	}
+
+snippet divisor
+abbr divisor
+	vector<ll> divisor(ll n) {
+		vector<ll> res;
+		for(ll i = 2; i*i <= n; i++) {
+			if(n % i == 0) {
+				res.push_back(i);
+				if(i != n/i) res.push_back(n/i);
+			}
+		}
+		return res;
+	}
+
+snippet prime_factor map
+abbr prime_factor map
+	map<ll,ll> prime_factor(ll n) {
+		map<ll,ll> res;
+		for(ll i=2; i*i <= n; i++) {
+			while(n%i == 0) {
+				res[i]++;
+				n /= i;
+			}
+		}
+
+		if(n != 1) res[n] = 1;
+		return res;
+	}
+
+snippet prime_factor vector
+abbr prime_factor vector
+	vector<ll> prime_factor(ll n) {
+		vector<ll> res;
+		if(n == 1) return res;
+
+		for(ll i = 2; i*i <= n; i++) {
+			while(n%i == 0) {
+				res.push_back(i);
+				n /= i;
+			}
+		}
+
+		if(n != 1) res.push_back(n);
+		return res;
 	}
 
 snippet lcm
@@ -641,12 +1046,91 @@ abbr a*x+b*y=1
 		return g;
     }
 
+snippet nCr
+abbr MOD,memo[2005][2005]
+	ll nCr(ll n,ll r)
+	{
+		if(n < r) return 0;
+		if(n == r) return 1;
+		if(r == 1) return n;
+		if(memo[n][r] != -1) return memo[n][r];
+
+		return memo[n][r] = (nCr(n-1,r)+nCr(n-1,r-1))%MOD;
+	}
+
+snippet mod_pow
+abbr mod_pow
+	ll mod_pow(ll x,ll n) {
+		ll res = 1;
+		while(n > 0) {
+			if(n&1) res = res * x % MOD;
+			x = x * x % MOD;
+			n >>= 1;
+		}
+		return res;
+	}
+
 snippet mod_inverse
 abbr inverse
 	ll mod_inverse(ll a,ll m) {
 		ll x,y;
 		extgcd(a,m,x,y);
 		return (m + x%m) % m;
+	}
+
+snippet fft
+abbr	need complex | -1 inverse
+	void fft(vector<C> &f,int n,int dir) {
+		if(n == 1) return;
+		vector<C> a(n/2),b(n/2);
+		
+		rep(i,n/2) {
+			a[i] = f[i*2];
+			b[i] = f[i*2+1];
+		}
+
+		fft(a,n/2,dir);
+		fft(b,n/2,dir);
+
+		C zeta = polar(1.0,dir*2*PI/n);
+		C pow_zeta(1.0,0.0);
+
+		rep(i,n) {
+			int id = i % (n/2);
+			f[i] = a[id] + pow_zeta * b[id];
+			pow_zeta *= zeta;
+		}
+	}
+
+snippet comvolution
+abbr	comvolution fft
+	vector<int> convolution(vector<int> aa,vector<int> bb){
+		vector<C> a,b,c;
+
+		rep(i,aa.size()) {
+			a.push_back(C(aa[i],0));
+			b.push_back(C(bb[i],0));
+		}
+
+		int n = 1;
+		while(n <= a.size() + b.size()) n *= 2;
+
+		a.resize(n);
+		b.resize(n);
+		c.resize(n);
+
+		fft(a,n, +1);
+		fft(b,n, +1);
+		rep(i,n) c[i] = a[i]*b[i];
+		//inverse
+		fft(c,n,-1);
+		
+		vector<int> res(n);
+		rep(i,n) { 
+			res[i] = int(c[i].real()/n + 0.5);
+		};
+
+		return res;
 	}
 
 # -------------------- STL ------------------
@@ -680,4 +1164,29 @@ abbr meiro def
 		if(0 <= y && y < h && 0 <= x && x < w) return true;
 		return false;
 	}
+
+snippet d3
+abbr 3d vector
+	int dx[13] = { 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1};
+	int dy[13] = { 0, 1, 0, 1,-1, 0, 0, 1, 1, 1, 1,-1,-1};
+	int dz[13] = { 0, 0, 1, 0, 0, 1,-1, 1,-1, 1,-1, 1,-1};
+
+	bool can(int x,int y,int z) {
+		if(0 <= x && x < n && 0 <= y && y < n && 0 <= z && z < n) return true;
+		return false;
+	}
+
+snippet d8
+	int dx[8] = {1,1,0,-1,-1,-1, 0, 1};
+	int dy[8] = {0,1,1, 1, 0,-1,-1,-1};
+
+	bool can(int y,int x) {
+		if(0 <= y && y < h && 0 <= x && x < w) return true;
+		return false;
+	}
+
+snippet days
+abbr 0:normal 1:leapyear
+	int days[2][13] = {	{0,31,28,31,30,31,30,31,31,30,31,30,31},
+						{0,31,29,31,30,31,30,31,31,30,31,30,31} };
 

@@ -21,6 +21,7 @@ set tabstop=4
 set shiftwidth=4
 set expandtab
 set nobackup
+set noswapfile
 set number
 set autoindent
 set smartindent
@@ -111,6 +112,7 @@ NeoBundleLazy "sjl/gundo.vim", {
 \ }}
 NeoBundle 'tpope/vim-endwise'
 NeoBundle 'itchyny/calendar.vim'
+NeoBundle 'wannesm/wmgraphviz.vim'
 
 NeoBundle 'Shougo/vimproc.vim', {
 \ 'build' : {
@@ -121,6 +123,17 @@ NeoBundle 'Shougo/vimproc.vim', {
 \     'unix' : 'gmake',
 \    },
 \ }
+
+NeoBundleLazy "osyo-manga/vim-sugarpot", {
+\   'autoload' : {
+\       'commands' : [
+\           {
+\               "name" : "SugarpotPreview",
+\               "complete" : "file",
+\           }
+\       ]
+\   }
+\}
 
 "colorsheme
 NeoBundle 'altercation/vim-colors-solarized'
@@ -211,7 +224,8 @@ NeoBundleCheck
 let file_name = expand("%:p")
 if has('vim_starting') &&  file_name == ""
     " autocmd VimEnter * call ExecuteNERDTree()
-    autocmd VimEnter * VimFilerCurrentDir -split -winwidth=30 -no-quit
+    " autocmd VimEnter * VimFilerCurrentDir -split -winwidth=30 -no-quit
+    autocmd VimEnter * VimFilerCurrentDir
 endif
 
 if has('vim_starting')
@@ -219,7 +233,7 @@ if has('vim_starting')
 endif
 
 " vimshell
-nnoremap <Space>v  :vs<CR>:<C-u>VimShell<CR>
+nnoremap <Space>v  :35vs<CR>:<C-u>VimShellBufferDir<CR>
 
 " function! ExecuteNERDTree()
 "     if !exists('g:nerdstatus')
@@ -244,7 +258,8 @@ let g:vimfiler_as_default_explorer = 1
 let g:vimfiler_safe_mode_by_default = 0
 let g:netrw_liststyle = 3
 let g:netrw_altv = 1
-
+nnoremap <Leader>f :VimFiler<Enter>
+nnoremap <Leader>fs :VimFiler -split<Enter>
 setlocal path+="/usr/include/c++/4.8"
 "let &l:include = '^\s*\%(\%(public\|static\)\s\+\)\?\<import'
 "let &l:includeexpr = 'substitute(substitute(v:fname, "\\.", "/", "g"), "$", ".d", "")'
@@ -302,8 +317,12 @@ let g:quickrun_config = {
 \	'runner/vimproc/updatetime' : 60,
 \	'command'  : 'platex',
 \	'exec' : ['%c %s','dvipdfmx %s:r.dvi','evince %s:r.pdf']
-\	}
-\
+\	},
+\   "html" : {
+\   'command': 'open',
+\   'exec': '%c %s',
+\   'outputter': 'browser'
+\   } 
 \}
 
 
@@ -404,7 +423,6 @@ vmap <Leader>c <Plug>(caw:i:toggle)
 
 "translate
 nnoremap <silent> tr :<C-u>ExciteTranslate<CR>
-"let &HTTP_PROXY='cache.ccs.kogakuin.ac.jp:8080'
 
 "Transset
 function! s:Transset(opacity)
@@ -467,6 +485,21 @@ nnoremap <Leader>g :GundoToggle<CR>
 
 " python
 autocmd FileType python setlocal completeopt-=preview
+
+" Tweetvim
+let g:tweetvim_display_icon = 1
+let g:tweetvim_tweet_per_page = 60
+
+let s:bundle = neobundle#get("vim-sugarpot")
+function! s:bundle.hooks.on_source(bundle)
+    let g:sugarpot_font = "DejaVu\ Sans\ Mono\ 10"
+    let g:sugarpot_convert_resize = "50%x34%"
+endfunction
+unlet s:bundle
+
+nnoremap <silent><Leader>tw :<C-u>tabnew <Bar> TweetVimHomeTimeline<CR>
+nnoremap <silent><Leader>tl :<C-u>TweetVimHomeTimeline<CR>
+nnoremap <silent><Leader>tm :<C-u>TweetVimMentions<CR>
 
 filetype plugin indent on     " required!
 filetype indent on

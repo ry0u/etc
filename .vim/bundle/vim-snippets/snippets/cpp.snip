@@ -1,0 +1,181 @@
+snippet     temp
+abbr        Competitive
+	#include <iostream>
+	#include <vector>
+	#include <string>
+	#include <cstring>
+	#include <algorithm>
+	#include <sstream>
+	#include <map>
+	#include <set>
+
+	#define REP(i,k,n) for(int i=k;i<n;i++)
+	#define rep(i,n) for(int i=0;i<n;i++)
+	#define INF 1<<30
+	#define pb push_back
+	#define mp make_pair
+
+	using namespace std;
+	typedef long long ll;
+	typedef pair<int,int> P;
+
+	int main() {
+		int n;
+		cin >> n;${0}
+
+		return 0;
+	}
+
+
+snippet     tempnm
+abbr        Competitive nm
+    #include <iostream>
+    #include <vector>
+    #include <string>
+    #include <cstring>
+    #include <algorithm>
+
+    #define REP(i,k,n) for(int i=k;i<n;i++)
+    #define rep(i,n) for(int i=0;i<n;i++)
+
+    using namespace std;
+    typedef long long ll;
+
+    int main() {
+		int n,m;
+		cin >> n >> m;${0}
+  
+		return 0;
+    }
+
+snippet     temps
+abbr        Competitive string
+    #include <iostream>
+    #include <vector>
+    #include <string>
+    #include <cstring>
+    #include <algorithm>
+
+    #define REP(i,k,n) for(int i=k;i<n;i++)
+    #define rep(i,n) for(int i=0;i<n;i++)
+
+    using namespace std;
+    typedef long long ll;
+
+    int main() {
+		string s;
+		cin >> s;${0}
+  
+		return 0;
+    }
+
+snippet aoj
+abbr AIZE JUDGE ONLINE
+    #include <iostream>
+    #include <vector>
+	#include <string>
+	#include <cstring>
+    #include <algorithm>
+
+    #define REP(i,k,n) for(int i=k;i<n;i++)
+    #define rep(i,n) for(int i=0;i<n;i++)
+
+    using namespace std;
+	typedef long long ll;
+
+    int main()
+    {
+		int n;
+		while(cin >> n && n) {
+			${0:TARGET}
+		}
+  
+		return 0;
+    }
+
+snippet aojnm
+abbr AIZE JUDGE ONLINE nm
+    #include <iostream>
+    #include <vector>
+	#include <string>
+	#include <cstring>
+    #include <algorithm>
+
+    #define REP(i,k,n) for(int i=k;i<n;i++)
+    #define rep(i,n) for(int i=0;i<n;i++)
+
+    using namespace std;
+	typedef long long ll;
+
+    int main()
+    {
+		int n,m;
+		while(cin >> n >> m) {
+			if(n == 0 && m == 0) break;
+			${0:TARGET}
+		}
+  
+		return 0;
+    }
+
+snippet aojs
+abbr AIZE JUDGE ONLINE String
+    #include <iostream>
+    #include <vector>
+	#include <string>
+	#include <cstring>
+    #include <algorithm>
+
+    #define REP(i,k,n) for(int i=k;i<n;i++)
+    #define rep(i,n) for(int i=0;i<n;i++)
+
+    using namespace std;
+	typedef long long ll;
+
+    int main()
+    {
+		string s;
+		while(cin >> s) {
+			if(s == "") break; 
+			${0:TARGET}
+		}
+  
+		return 0;
+    }
+
+snippet printGraph
+abbr dotprintGraph
+	void printfGraph(vector<edge> G[],int n) {
+		cout << "digraph g{" << endl;
+		cout << "node[shape = circle];" << endl;
+		cout << "nodestep=0.6;" << endl;
+		cout << "rankdir=LR;" << endl;
+
+
+		rep(i,n) {
+			rep(j,G[i].size()) {
+				cout << i << " ->" << G[i][j].to << ";" << endl;
+			}
+		}
+
+		cout << "}" << endl;
+	}
+	
+snippet printEdge
+abbr dotprintEdge
+	void printEdge(vector<edge> E,int n) {
+		int m = E.size();
+
+		cout << "digraph g{" << endl;
+		cout << "node[shape = circle];" << endl;
+		cout << "nodestep=0.6;" << endl;
+		cout << "randir=LR;" << endl;
+
+		rep(i,m) {
+			edge e = E[i];
+			cout << e.from << " -> " << e.to << ";" << endl;
+		}
+
+		cout << "]" << endl;
+	}
+

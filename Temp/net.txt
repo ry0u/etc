@@ -1,0 +1,9 @@
+wlan0     IEEE 802.11bgn  ESSID:"aterm-058565-g"  
+          Mode:Managed  Frequency:2.452 GHz  Access Point: 1C:B1:7F:A6:0C:7E   
+          Bit Rate=300 Mb/s   Tx-Power=22 dBm   
+          Retry  long limit:7   RTS thr:off   Fragment thr:off
+          Power Management:on
+          Link Quality=39/70  Signal level=-71 dBm  
+          Rx invalid nwid:0  Rx invalid crypt:0  Rx invalid frag:0
+          Tx excessive retries:0  Invalid misc:506   Missed beacon:0
+

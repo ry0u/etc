@@ -19,7 +19,7 @@ set nocompatible
 set guifont=DejaVu\ Sans\ Mono\ 10
 set tabstop=4
 set shiftwidth=4
-set expandtab
+set noexpandtab
 set nobackup
 set noswapfile
 set number
@@ -36,6 +36,7 @@ set background=dark
 highlight Normal ctermbg=none
 autocmd FileType html,javascript colorscheme molokai
 autocmd FileType json colorscheme af
+" au BufRead *.png,*.jpg,*.jpeg :call DisplayImage()
 
 noremap j gj
 noremap k gk
@@ -134,6 +135,13 @@ NeoBundleLazy "osyo-manga/vim-sugarpot", {
 \       ]
 \   }
 \}
+
+NeoBundle 'tpope/vim-pathogen'
+NeoBundle 'tpope/vim-afterimage'
+" NeoBundle 'ashisha/image.vim'
+" NeoBundle 'thinca/vim-splash'
+
+
 
 "colorsheme
 NeoBundle 'altercation/vim-colors-solarized'
@@ -286,7 +294,6 @@ let g:syntastic_cpp_check_header = 1
 let g:syntastic_tex_checkers=['chktex']
 let g:syntastic_java_javac_config_file_enabled = 1
 
-
 "include 
 let g:neocomplete#sources#include#paths ={
 \ 'cpp': '.,/usr/include/c++/4.8',
@@ -307,22 +314,26 @@ let g:quickrun_config = {
 \		"hook/time/enable" : 1
 \   },
 \   "tex" : {
-\	'runner': 'vimproc',
-\	'runner/vimproc/updatetime' : 60,
-\	'command' : 'ptex2pdf',
-\	'exec': ['%c -l "%S:t:r.tex"','evince "%S:t:r.pdf"']
+\		'runner': 'vimproc',
+\		'runner/vimproc/updatetime' : 60,
+\		'command' : 'ptex2pdf',
+\		'exec': ['%c -l "%S:t:r.tex"','evince "%S:t:r.pdf"']
 \   },
 \	"tex2" : {
-\	'runner': 'vimproc',
-\	'runner/vimproc/updatetime' : 60,
-\	'command'  : 'platex',
-\	'exec' : ['%c %s','dvipdfmx %s:r.dvi','evince %s:r.pdf']
+\		'runner': 'vimproc',
+\		'runner/vimproc/updatetime' : 60,
+\		'command'  : 'platex',
+\		'exec' : ['%c %s','dvipdfmx %s:r.dvi','evince %s:r.pdf']
 \	},
 \   "html" : {
-\   'command': 'open',
-\   'exec': '%c %s',
-\   'outputter': 'browser'
-\   } 
+\		'command': 'firefox',
+\   	'exec': '%c %s',
+\		'outputter': 'browser'
+\   },
+\   "dot" : {
+\   	'command': 'dot',
+\   	'exec': ['%c -Tpng %s -o %s:r.png', 'display %s:r.png']
+\   }
 \}
 
 
@@ -492,10 +503,15 @@ let g:tweetvim_tweet_per_page = 60
 
 let s:bundle = neobundle#get("vim-sugarpot")
 function! s:bundle.hooks.on_source(bundle)
-    let g:sugarpot_font = "DejaVu\ Sans\ Mono\ 10"
+    let g:sugarpot_font = "DejaVu\ Sans\ Mono\ 6"
     let g:sugarpot_convert_resize = "50%x34%"
 endfunction
 unlet s:bundle
+
+let g:sugarpot_gvim = "gvim"
+let g:sugarpot_xpm_cache_directory  = '~/Desktop'
+let g:sugarpot_gvim_cmd_option = ''
+let g:sugarpot_convert_resize = "100%x80%"
 
 nnoremap <silent><Leader>tw :<C-u>tabnew <Bar> TweetVimHomeTimeline<CR>
 nnoremap <silent><Leader>tl :<C-u>TweetVimHomeTimeline<CR>

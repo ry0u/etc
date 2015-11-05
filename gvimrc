@@ -28,7 +28,7 @@ set guifont=DejaVu\ Sans\ Mono\ 10
 "set guifont=Ricty\ 10
 set tabstop=4
 set shiftwidth=4
-set expandtab
+set noexpandtab
 set nobackup
 set number
 set autoindent

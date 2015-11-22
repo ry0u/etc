@@ -678,8 +678,9 @@ abbr circle
 		}
 	};
 
+
 #----------- matrix ---------------------
-snippet     mat init
+snippet     mat
 abbr        matrix init
 	typedef vector<double> vec;
 	typedef vector<vec> mat;
@@ -732,10 +733,10 @@ abbr        matrix init
 	}
 
 	double det(mat A) {
-		const int n = A.size();
+		int n = A.size();
 		double ret = 1;
 		rep(i,n) {
-			int pivot = 1;
+			int pivot = i;
 			REP(j, i+1, n) {
 				if(abs(A[j][i]) > abs(A[pivot][i])) pivot = j;
 			}
@@ -780,8 +781,8 @@ abbr        matrix init
 				A[ret][k] /= A[ret][i];
 			}
 
-			REP(j,ret+1, n) {
-				REP(k,i,m) {
+			REP(j, ret+1, n) {
+				REP(k, i, m) {
 					A[j][k] -= A[ret][k] * A[j][i];
 				}
 			}
@@ -792,22 +793,21 @@ abbr        matrix init
 		return ret;
 	}
 
+snippet gauss_jordan
+abbr O(n^3)
 	vec gauss_jordan(const mat& A, const vec& b) {
 		int n = A.size();
-		mat B(n, vec(n+1));
+		mat B(n, vec(n+1) );
 
-		rep(i,n) {
-			rep(j,n) {
-				B[i][j] = A[i][j];
-			}
+		rep(i, n) {
+			rep(j, n) B[i][j] = A[i][j];
 		}
 
-		rep(i,n) B[i][n] = b[i];
+		rep(i, n) B[i][n] = b[i];
 
-		rep(i,n) {
+		rep(i, n) {
 			int pivot = i;
-
-			REP(j,i,n) {
+			REP(j, i, n) {
 				if(abs(B[j][i]) > abs(B[pivot][i])) pivot = j;
 			}
 
@@ -815,12 +815,10 @@ abbr        matrix init
 
 			if(abs(B[i][i]) < EPS) return vec();
 
-			REP(j,i+1,n+1) {
-				B[i][j] /= B[i][i];
-			}
-			rep(j,n) {
+			REP(j, i+1, n+1) B[i][j] /= B[i][i];
+			rep(j, n) {
 				if(i != j) {
-					REP(k,i+1,n+1) {
+					REP(k, i+1, n+1) {
 						B[j][k] -= B[j][i] * B[i][k];
 					}
 				}
@@ -828,13 +826,9 @@ abbr        matrix init
 		}
 
 		vec x(n);
-		rep(i,n) {
-			x[i] = B[i][n];
-		}
-
+		rep(i, n) x[i] = B[i][n];
 		return x;
 	}
-
 
 #------------- graph theory------------------
 
